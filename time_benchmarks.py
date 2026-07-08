@@ -8,7 +8,7 @@ import pandas as pd
 from setup import take_experimental_shot
 
 # Defining where to save the data
-data_filepath = str(Path.home()) + "/research_data/data/dqc_simulator_benchmarks/data_test.csv"
+data_filepath = str(Path.home()) + "/research_data/data/dqc_simulator_benchmarks/time_benchmark_test.csv"
 
 # Benchmarking time
 F_werner=0.99

@@ -1,14 +1,20 @@
 """Benchmark time"""
 
+import os
 from pathlib import Path
 from timeit import timeit
 
 import pandas as pd
 
-from setup import get_fidelity
+# get_fidelity is needed in the following but will show up in linter as unused because
+# it appears as a string in timeit. Nonetheless, it will be fed to timeit using the 
+# globals keyword argument and must not be removed
+from setup import get_fidelity, save
 
 # Defining where to save the data
-data_filepath = str(Path.home()) + "/research_data/data/dqc_simulator_benchmarks/time_benchmark_test.csv"
+data_filepath = (str(Path.home()) +
+                 "/research_data/data/dqc_simulator_benchmarks/time_benchmark_DM_test.csv"
+                  )
 
 # Benchmarking time
 F_werner=0.99
@@ -24,9 +30,17 @@ circuit_filepaths = [
     "circuits/grover_5qubits.qasm",  # Grover algorithm
     "circuits/qft_5qubits.qasm",  # QFT
 ]
+# circuit_filepaths = ["circuits/" + filename for filename in os.listdir("circuits/")]
+# circuit_filepaths.sort()
 
-results = {}
 for circuit in circuit_filepaths:
+    print("For circuit:", circuit)
+    results = {
+        "circuit_filename": [], 
+        "total_time (s)": [], 
+        "num_iterations": [], 
+        "average_time (s)": []
+    }
     program_str = (
         "get_fidelity("
         "circuit,"
@@ -40,5 +54,11 @@ for circuit in circuit_filepaths:
 
     # Running program_str `num_iterations` times and saving average
     total_time = timeit(program_str, number=num_iterations, globals=globals())
-    results[circuit] = [total_time/num_iterations]
-print("results are ", results)
+    average_time = total_time/num_iterations
+    results["circuit_filename"].append(circuit)
+    results["total_time (s)"].append(total_time)
+    results["num_iterations"].append(num_iterations)
+    results["average_time (s)"].append(average_time)
+    print("Average time is ", average_time)
+    data = pd.DataFrame(results)
+    save()

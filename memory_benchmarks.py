@@ -27,9 +27,9 @@ circuit_filepaths.sort()
 #      "circuits/qft_5qubits.qasm",  # QFT
 # ]
 
-results = {"circuit_file": [], "max_memory_usage (MiB)": []}
 for circuit in circuit_filepaths:
-    print("Benchmarking:", circuit)
+    results = {"circuit_file": [], "max_memory_usage (MiB)": []}
+    print("For circuit:", circuit)
     stuff2profile = (get_fidelity, (circuit,), {
                 "F_werner" : F_werner,
                 "p_depolar_error_cnot" : p_depolar_error_cnot,
@@ -39,26 +39,12 @@ for circuit in circuit_filepaths:
                 },
             )
     mem_usage = memory_usage(stuff2profile, include_children=True)
+    max_usage = max(mem_usage)
+    print("Max RAM used is: ", max_usage, "MiB")
     results["circuit_file"].append(circuit)
-    results["max_memory_usage (MiB)"].append(max(mem_usage))
-data = pd.DataFrame(results)
-save(data, data_filepath)
+    results["max_memory_usage (MiB)"].append(max_usage)
+    data = pd.DataFrame(results)
+    save(data, data_filepath)
 
 
 
-# results = {}
-# for circuit in circuit_filepaths:
-#     results[circuit] = []
-#     for _ in range(10):
-#         stuff2profile = (get_fidelity, (circuit,), {
-#                     "F_werner" : F_werner,
-#                     "p_depolar_error_cnot" : p_depolar_error_cnot,
-#                     "single_qubit_gate_error_prob" : single_qubit_gate_error_prob,
-#                     "meas_error_prob" : meas_error_prob,
-#                     "memory_depolar_rate" : memory_depolar_rate,
-#                     },
-#                 )
-#         mem_usage = memory_usage(stuff2profile, include_children=True)
-#         results[circuit].append(mem_usage)
-#     # results[circuit] = mem_usage
-# print("Results are:", results)

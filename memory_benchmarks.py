@@ -1,13 +1,15 @@
 """Memory benchmarks"""
 
+import os
 from pathlib import Path
 
 from memory_profiler import memory_usage
+import pandas as pd
 
-from setup import get_fidelity
+from setup import get_fidelity, save
 
 home_dir = str(Path.home())
-data_filepath = home_dir + "/research_data/data/dqc_simulator_benchmarks/mem_benchmark_test.csv"
+data_filepath = home_dir + "/research_data/data/dqc_simulator_benchmarks/mem_benchmark_DM.csv"
 
 F_werner=0.99
 p_depolar_error_cnot=1e-03
@@ -17,14 +19,17 @@ memory_depolar_rate=0.055
 
 # Choosing circuits to use (assuming the files are in the current working
 # directory)
-circuit_filepaths = [
-     "circuits/ghz_5qubits.qasm",  # GHZ generation circuit
-     "circuits/grover_5qubits.qasm",  # Grover algorithm
-     "circuits/qft_5qubits.qasm",  # QFT
-]
+circuit_filepaths = ["circuits/" + filename for filename in os.listdir("circuits/")]
+circuit_filepaths.sort()
+# circuit_filepaths = [
+#      "circuits/ghz_5qubits.qasm",  # GHZ generation circuit
+#      "circuits/grover_5qubits.qasm",  # Grover algorithm
+#      "circuits/qft_5qubits.qasm",  # QFT
+# ]
 
-results = {}
+results = {"circuit_file": [], "max_memory_usage (MiB)": []}
 for circuit in circuit_filepaths:
+    print("Benchmarking:", circuit)
     stuff2profile = (get_fidelity, (circuit,), {
                 "F_werner" : F_werner,
                 "p_depolar_error_cnot" : p_depolar_error_cnot,
@@ -34,8 +39,11 @@ for circuit in circuit_filepaths:
                 },
             )
     mem_usage = memory_usage(stuff2profile, include_children=True)
-    results[circuit] = mem_usage
-print("Results are:", results)
+    results["circuit_file"].append(circuit)
+    results["max_memory_usage (MiB)"].append(max(mem_usage))
+data = pd.DataFrame(results)
+save(data, data_filepath)
+
 
 
 # results = {}

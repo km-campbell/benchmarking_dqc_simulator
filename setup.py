@@ -2,6 +2,7 @@
 
 import itertools as it
 import os
+import re
 
 import netsquid as ns
 from netsquid.qubits import QFormalism, qubitapi as qapi
@@ -167,3 +168,19 @@ def save(data: pd.DataFrame,
         data.to_csv(filename)
     else:  # if file already exists, append without writing header
         data.to_csv(filename, mode="a", header=False)
+
+def find_num_qubits(
+    filename: str # should be for circuit file. Can be name or path
+):
+    correct_substring_regex = re.compile(r'(\d+)qubits')
+    correct_substring = correct_substring_regex.search(filename).group(0)
+    regex = re.compile(r'\d+')
+    num_qubits = int(regex.search(correct_substring).group(0))
+    return num_qubits
+    
+def find_circuit_name(
+    filename: str, # should be for circuit file. Can be name or path
+):
+    regex = re.compile(r'[a-z]+(?=_(\d+)qubits)')
+    circuit_name = regex.search(filename).group(0)
+    return circuit_name

@@ -25,7 +25,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "dqc-simulator", specifier = ">=0.2.5" },
+    { name = "dqc-simulator", git = "https://github.com/km-campbell/dqc_simulator.git?branch=processify" },
     { name = "memory-profiler", specifier = ">=0.61.0" },
 ]
 
@@ -113,16 +113,12 @@ wheels = [
 
 [[package]]
 name = "dqc-simulator"
-version = "0.2.5"
-source = { registry = "https://pypi.org/simple" }
+version = "0.2.6"
+source = { git = "https://github.com/km-campbell/dqc_simulator.git?branch=processify#4f79c32a2190202230d7281bca770034f5fc1f87" }
 dependencies = [
     { name = "netsquid" },
     { name = "netsquid-physlayer" },
     { name = "pyparsing" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/10/4f/1ebbfc280e777445127e96504be19424f4cfc808eb92845e913c93a7eb3f/dqc_simulator-0.2.5.tar.gz", hash = "sha256:b5441f2a3e3c50cc84ed5e28afa53527024c713cdf46ab3cb2f3c3d6b1489b64", size = 87191, upload-time = "2026-02-24T12:00:43.218Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/7a/72/6039d6a91f88d0f42cff27f6803aac71a4ea6b8751661b274581e0f01632/dqc_simulator-0.2.5-py3-none-any.whl", hash = "sha256:a1c3d3ca2784018d249e4e17fd05750e4797d04026f2ce587c47c8cc2b8320f0", size = 98768, upload-time = "2026-02-24T12:00:44.624Z" },
 ]
 
 [[package]]

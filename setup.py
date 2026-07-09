@@ -1,9 +1,11 @@
 """This is similar to from_monolithic_circuit.py but has been adapted to collect data from multiple circuits"""
 
 import itertools as it
+import sys
+import traceback
 
 import netsquid as ns
-from netsquid.qubits import QFormalism
+from netsquid.qubits import QFormalism, qubitapi as qapi
 
 from dqc_simulator.hardware.connections import BlackBoxEntanglingQsourceConnection
 from dqc_simulator.hardware.dqc_creation import DQC
@@ -20,6 +22,7 @@ from dqc_simulator.software.partitioner import (
     first_come_first_served_qubits_to_qpus as allocate,
     partition_gate_tuples as partition,
 )
+from dqc_simulator.util.helper import processify
 
 def setup_hardware(
     F_werner=1,
@@ -73,7 +76,7 @@ def setup_sim(dqc, circuit_filepath):
     nodes = list(dqc.nodes.values())
 
     # import .qasm file and convert to gate_tuples for monolithic_circuit
-    include_path = "."  # assuming qelib1.inc is in current working directory
+    include_path = "./circuits/"  # assuming qelib1.inc is in current working directory
     monolithic_circuit = preprocess(circuit_filepath, include_path=include_path)
     monolithic_circuit = monolithic_circuit.ops  # gate_tuples
 
@@ -133,4 +136,24 @@ def take_experimental_shot(
         qubits_2b_checked += [qubit for qubit in qubits if qubit is not None]
     return qubits_2b_checked
 
-
+@processify
+def get_fidelity(
+                 circuit, 
+                 F_werner,
+                 p_depolar_error_cnot,
+                 single_qubit_gate_error_prob,
+                 meas_error_prob,
+                 memory_depolar_rate):
+    # Run ideal shot
+    ideal_qubits = take_experimental_shot(circuit)
+    actual_qubits = take_experimental_shot(
+        circuit,
+        F_werner=F_werner,
+        p_depolar_error_cnot=p_depolar_error_cnot,
+        single_qubit_gate_error_prob=single_qubit_gate_error_prob,
+        meas_error_prob=meas_error_prob,
+        memory_depolar_rate=memory_depolar_rate,
+    )
+    desired_state = qapi.reduced_dm(ideal_qubits)
+    fidelity = qapi.fidelity(actual_qubits, desired_state, squared=True)
+    return fidelity

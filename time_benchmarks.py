@@ -5,7 +5,7 @@ from timeit import timeit
 
 import pandas as pd
 
-from setup import take_experimental_shot
+from setup import get_fidelity
 
 # Defining where to save the data
 data_filepath = str(Path.home()) + "/research_data/data/dqc_simulator_benchmarks/time_benchmark_test.csv"
@@ -20,9 +20,9 @@ num_iterations = 5
 # Choosing circuits to use (assuming the files are in the current working
 # directory)
 circuit_filepaths = [
-    "ghz_5qubits.qasm",  # GHZ generation circuit
-    "grover_5qubits.qasm",  # Grover algorithm
-    "qft_5qubits.qasm",  # QFT
+    "circuits/ghz_5qubits.qasm",  # GHZ generation circuit
+    "circuits/grover_5qubits.qasm",  # Grover algorithm
+    "circuits/qft_5qubits.qasm",  # QFT
 ]
 
 results = {}

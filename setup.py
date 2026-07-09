@@ -172,15 +172,15 @@ def save(data: pd.DataFrame,
 def find_num_qubits(
     filename: str # should be for circuit file. Can be name or path
 ):
-    correct_substring_regex = re.compile(r'(\d+)qubits')
-    correct_substring = correct_substring_regex.search(filename).group(0)
-    regex = re.compile(r'\d+')
-    num_qubits = int(regex.search(correct_substring).group(0))
+    # Regular expression to match a number only if it is followed by the word qubits
+    regex = re.compile(r'(\d+)(?=qubits\.qasm)')
+
+    num_qubits = int(regex.search(filename).group(0))
     return num_qubits
     
 def find_circuit_name(
     filename: str, # should be for circuit file. Can be name or path
 ):
-    regex = re.compile(r'[a-z]+(?=_(\d+)qubits)')
+    regex = re.compile(r'[a-z]+(?=_(\d+)qubits\.qasm)')
     circuit_name = regex.search(filename).group(0)
     return circuit_name

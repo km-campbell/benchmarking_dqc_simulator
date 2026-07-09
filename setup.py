@@ -1,11 +1,11 @@
 """This is similar to from_monolithic_circuit.py but has been adapted to collect data from multiple circuits"""
 
 import itertools as it
-import sys
-import traceback
+import os
 
 import netsquid as ns
 from netsquid.qubits import QFormalism, qubitapi as qapi
+import pandas as pd
 
 from dqc_simulator.hardware.connections import BlackBoxEntanglingQsourceConnection
 from dqc_simulator.hardware.dqc_creation import DQC
@@ -157,3 +157,13 @@ def get_fidelity(
     desired_state = qapi.reduced_dm(ideal_qubits)
     fidelity = qapi.fidelity(actual_qubits, desired_state, squared=True)
     return fidelity
+
+
+def save(data: pd.DataFrame,
+         filename: str # should include path to file
+):
+    # if file does not exist write data with header
+    if not os.path.isfile(filename):
+        data.to_csv(filename)
+    else:  # if file already exists, append without writing header
+        data.to_csv(filename, mode="a", header=False)

@@ -28,7 +28,7 @@ circuit_filepaths = [
 results = {}
 for circuit in circuit_filepaths:
     program_str = (
-        "take_experimental_shot("
+        "get_fidelity("
         "circuit,"
         f"F_werner={F_werner},"
         f"p_depolar_error_cnot={p_depolar_error_cnot},"
@@ -37,7 +37,6 @@ for circuit in circuit_filepaths:
         f"memory_depolar_rate={memory_depolar_rate},"
         ")"
     )
-
 
     # Running program_str `num_iterations` times and saving average
     total_time = timeit(program_str, number=num_iterations, globals=globals())

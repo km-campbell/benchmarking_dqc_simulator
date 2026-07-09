@@ -18,9 +18,9 @@ memory_depolar_rate=0.055
 # Choosing circuits to use (assuming the files are in the current working
 # directory)
 circuit_filepaths = [
-    home_dir + "/coding_projects/benchmarking_dqc_simulator/circuits/ghz_8qubits.qasm",  # GHZ generation circuit
-    # home_dir + "/coding_projects/benchmarking_dqc_simulator/circuits/grover_8qubits.qasm",  # Grover algorithm
-    # home_dir + "/coding_projects/benchmarking_dqc_simulator/circuits/qft_8qubits.qasm",  # QFT
+     "circuits/ghz_5qubits.qasm",  # GHZ generation circuit
+     "circuits/grover_5qubits.qasm",  # Grover algorithm
+     "circuits/qft_5qubits.qasm",  # QFT
 ]
 
 results = {}

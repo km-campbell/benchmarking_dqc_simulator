@@ -6,6 +6,7 @@ readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
     "dqc-simulator>=0.2.5",
+    "matplotlib>=3.10.9",
     "memory-profiler>=0.61.0",
     "pytest>=9.1.1",
 ]

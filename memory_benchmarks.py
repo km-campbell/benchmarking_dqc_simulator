@@ -20,7 +20,7 @@ if __name__ == "__main__":
 
     # Choosing circuits to use (assuming the files are in the current working
     # directory)
-    circuit_filepaths = get_circuit_filepaths
+    circuit_filepaths = get_circuit_filepaths()
     # circuit_filepaths = [
     #      "circuits/ghz_5qubits.qasm",  # GHZ generation circuit
     #      "circuits/grover_5qubits.qasm",  # Grover algorithm

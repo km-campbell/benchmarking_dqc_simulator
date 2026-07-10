@@ -199,6 +199,7 @@ def find_circuit_name(
 def sort_files_by_circ_type(circuit_filepaths) -> {str: [str]}:
     # Ordering fastest to slowest to simulate
     sorted_files = {"ghz": [], "qft": [], "grover": []}
+    circuit_filepaths.sort()
     for file in circuit_filepaths:
         try:
             circuit_type = find_circuit_name(file)
@@ -213,11 +214,11 @@ def get_circuit_filepaths():
 def sort_circ_files_by_type_and_speed(circuit_filepaths) -> [str]:
     """Ad hoc sorting by execution speed (based on my experience of how long they take to run)"""
     sorted_files = sort_files_by_circ_type(circuit_filepaths)
+    print(sorted_files)
     sorted_files = list(sorted_files.values())
     return list(it.chain.from_iterable(sorted_files))
 
 def sort_circuits_by_qubit_size(circuit_filepaths):
-    circuit_filepaths.sort()
     qubits4circuit = sort_files_by_circ_type(circuit_filepaths)
 
     max_iterations = 100

@@ -6,7 +6,7 @@ from pathlib import Path
 from memory_profiler import memory_usage
 import pandas as pd
 
-from setup import get_fidelity, save
+from setup import get_fidelity, save, get_circuit_filepaths
 
 home_dir = str(Path.home())
 data_filepath = home_dir + "/research_data/data/dqc_simulator_benchmarks/mem_benchmark_DM.csv"
@@ -20,8 +20,7 @@ if __name__ == "__main__":
 
     # Choosing circuits to use (assuming the files are in the current working
     # directory)
-    circuit_filepaths = ["circuits/" + filename for filename in os.listdir("circuits/")]
-    circuit_filepaths.sort()
+    circuit_filepaths = get_circuit_filepaths
     # circuit_filepaths = [
     #      "circuits/ghz_5qubits.qasm",  # GHZ generation circuit
     #      "circuits/grover_5qubits.qasm",  # Grover algorithm

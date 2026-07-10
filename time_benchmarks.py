@@ -9,7 +9,7 @@ import pandas as pd
 # get_fidelity is needed in the following but will show up in linter as unused because
 # it appears as a string in timeit. Nonetheless, it will be fed to timeit using the 
 # globals keyword argument and must not be removed
-from setup import get_fidelity, save
+from setup import get_fidelity, save, get_circuit_filepaths
 
 # Defining where to save the data
 data_filepath = (str(Path.home()) +
@@ -26,13 +26,13 @@ if __name__ == "__main__":
     num_iterations = 5
     # Choosing circuits to use (assuming the files are in the current working
     # directory)
-    circuit_filepaths = [
-        "circuits/ghz_5qubits.qasm",  # GHZ generation circuit
-        "circuits/grover_5qubits.qasm",  # Grover algorithm
-        "circuits/qft_5qubits.qasm",  # QFT
-    ]
-    # circuit_filepaths = ["circuits/" + filename for filename in os.listdir("circuits/")]
-    # circuit_filepaths.sort()
+    circuit_filepaths = get_circuit_filepaths()
+    # circuit_filepaths = [
+    #     "circuits/ghz_5qubits.qasm",  # GHZ generation circuit
+    #     "circuits/grover_5qubits.qasm",  # Grover algorithm
+    #     "circuits/qft_5qubits.qasm",  # QFT
+    # ]
+
 
     for circuit in circuit_filepaths:
         print("For circuit:", circuit)

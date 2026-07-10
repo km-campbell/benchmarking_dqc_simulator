@@ -176,16 +176,57 @@ def find_num_qubits(
     regex = re.compile(r'(\d+)(?=qubits\.qasm)')
 
     # Search filename for the number of qubits using the regular expression
-    num_qubits = int(regex.search(filename).group(0))
+    try:
+        num_qubits = int(regex.search(filename).group(0))
+    except AttributeError:
+        num_qubits = None
     return num_qubits
     
 def find_circuit_name(
     filename: str, # should be for circuit file. Can be name or path
-):
+) -> str | None:
     # Regular expression to match a group of lower case letters 
     # only if they are followed by _<an integer>qubits.qasm
     regex = re.compile(r'[a-z]+(?=_(\d+)qubits\.qasm)')
 
     # Search filename for the circuit name using the regular expression
-    circuit_name = regex.search(filename).group(0)
+    try:
+        circuit_name = regex.search(filename).group(0)
+    except AttributeError:
+        circuit_name = None
     return circuit_name
+
+def sort_files_by_circ_type(circuit_filepaths):
+    qubits4circuit = {"ghz": [], "grover": [], "qft": []}
+    for file in circuit_filepaths:
+        try:
+            circuit_type = find_circuit_name(file)
+            qubits4circuit[circuit_type].append(file)
+        except KeyError: # handling qelib1.inc, which isn't circuit
+            pass
+    return qubits4circuit
+
+# Retrieve and sort the circuit filepaths. I assume for now that setup.py is in the same
+# folder as the benchmark scripts. The sorting is by number of qubits
+def get_circuit_filepaths():
+    circuit_filepaths = ["circuits/" + filename for filename in os.listdir("circuits/")]
+    circuit_filepaths.sort()
+    qubits4circuit = sort_files_by_circ_type(circuit_filepaths)
+
+    max_iterations = 100
+    sorted_filepaths = []
+    finished_circuit_types = []
+    ii = 0
+    while True:
+        for circuit in qubits4circuit:
+            try:
+                sorted_filepaths.append(qubits4circuit[circuit][ii])
+            except KeyError: # due to qelib1.inc not being circuit
+                pass
+            except IndexError:
+                finished_circuit_types.append(circuit)   
+            if len(finished_circuit_types) == len(qubits4circuit.keys()):
+                return sorted_filepaths
+        ii+=1
+        if ii > max_iterations:
+            break

@@ -16,49 +16,50 @@ data_filepath = (str(Path.home()) +
                  "/research_data/data/dqc_simulator_benchmarks/time_benchmark_DM_test.csv"
                   )
 
-# Benchmarking time
-F_werner=0.99
-p_depolar_error_cnot=1e-03
-single_qubit_gate_error_prob=2e-05
-meas_error_prob=3e-03
-memory_depolar_rate=0.055
-num_iterations = 5
-# Choosing circuits to use (assuming the files are in the current working
-# directory)
-circuit_filepaths = [
-    "circuits/ghz_5qubits.qasm",  # GHZ generation circuit
-    "circuits/grover_5qubits.qasm",  # Grover algorithm
-    "circuits/qft_5qubits.qasm",  # QFT
-]
-# circuit_filepaths = ["circuits/" + filename for filename in os.listdir("circuits/")]
-# circuit_filepaths.sort()
+if __name__ == "__main__":
+    # Benchmarking time
+    F_werner=0.99
+    p_depolar_error_cnot=1e-03
+    single_qubit_gate_error_prob=2e-05
+    meas_error_prob=3e-03
+    memory_depolar_rate=0.055
+    num_iterations = 5
+    # Choosing circuits to use (assuming the files are in the current working
+    # directory)
+    circuit_filepaths = [
+        "circuits/ghz_5qubits.qasm",  # GHZ generation circuit
+        "circuits/grover_5qubits.qasm",  # Grover algorithm
+        "circuits/qft_5qubits.qasm",  # QFT
+    ]
+    # circuit_filepaths = ["circuits/" + filename for filename in os.listdir("circuits/")]
+    # circuit_filepaths.sort()
 
-for circuit in circuit_filepaths:
-    print("For circuit:", circuit)
-    results = {
-        "circuit_filename": [], 
-        "total_time (s)": [], 
-        "num_iterations": [], 
-        "average_time (s)": []
-    }
-    program_str = (
-        "get_fidelity("
-        "circuit,"
-        f"F_werner={F_werner},"
-        f"p_depolar_error_cnot={p_depolar_error_cnot},"
-        f"single_qubit_gate_error_prob={single_qubit_gate_error_prob},"
-        f"meas_error_prob={meas_error_prob},"
-        f"memory_depolar_rate={memory_depolar_rate},"
-        ")"
-    )
+    for circuit in circuit_filepaths:
+        print("For circuit:", circuit)
+        results = {
+            "circuit_filename": [], 
+            "total_time (s)": [], 
+            "num_iterations": [], 
+            "average_time (s)": []
+        }
+        program_str = (
+            "get_fidelity("
+            "circuit,"
+            f"F_werner={F_werner},"
+            f"p_depolar_error_cnot={p_depolar_error_cnot},"
+            f"single_qubit_gate_error_prob={single_qubit_gate_error_prob},"
+            f"meas_error_prob={meas_error_prob},"
+            f"memory_depolar_rate={memory_depolar_rate},"
+            ")"
+        )
 
-    # Running program_str `num_iterations` times and saving average
-    total_time = timeit(program_str, number=num_iterations, globals=globals())
-    average_time = total_time/num_iterations
-    results["circuit_filename"].append(circuit)
-    results["total_time (s)"].append(total_time)
-    results["num_iterations"].append(num_iterations)
-    results["average_time (s)"].append(average_time)
-    print("Average time is ", average_time)
-    data = pd.DataFrame(results)
-    save()
+        # Running program_str `num_iterations` times and saving average
+        total_time = timeit(program_str, number=num_iterations, globals=globals())
+        average_time = total_time/num_iterations
+        results["circuit_filename"].append(circuit)
+        results["total_time (s)"].append(total_time)
+        results["num_iterations"].append(num_iterations)
+        results["average_time (s)"].append(average_time)
+        print("Average time is ", average_time)
+        data = pd.DataFrame(results)
+        save(data, data_filepath)

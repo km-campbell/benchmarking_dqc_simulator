@@ -45,7 +45,7 @@ if __name__ == "__main__":
     for circuit in circuit_filepaths:
         print("For circuit:", circuit)
         results = {
-            "circuit_filename": [], 
+            "circuit_file": [], 
             "total_time (s)": [], 
             "num_iterations": [], 
             "average_time (s)": []

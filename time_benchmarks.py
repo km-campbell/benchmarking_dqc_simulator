@@ -74,6 +74,6 @@ if __name__ == "__main__":
         results["total_time (s)"].append(total_time)
         results["num_iterations"].append(num_iterations)
         results["average_time (s)"].append(average_time)
-        print("Average time is ", average_time)
+        print("Average time is ", average_time, "s")
         data = pd.DataFrame(results)
         save(data, data_filepath)

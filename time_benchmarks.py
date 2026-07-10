@@ -9,11 +9,18 @@ import pandas as pd
 # get_fidelity is needed in the following but will show up in linter as unused because
 # it appears as a string in timeit. Nonetheless, it will be fed to timeit using the 
 # globals keyword argument and must not be removed
-from setup import get_fidelity, save, get_circuit_filepaths
+from setup import (
+    get_fidelity, # NEED this despite what linter says (see above)
+    save,
+    get_circuit_filepaths,
+    sort_circ_files_by_type_and_speed,
+    find_circuit_name,
+    find_num_qubits,
+)
 
 # Defining where to save the data
 data_filepath = (str(Path.home()) +
-                 "/research_data/data/dqc_simulator_benchmarks/time_benchmark_DM_test.csv"
+                 "/research_data/data/dqc_simulator_benchmarks/time_benchmark_DM.csv"
                   )
 
 if __name__ == "__main__":
@@ -27,6 +34,7 @@ if __name__ == "__main__":
     # Choosing circuits to use (assuming the files are in the current working
     # directory)
     circuit_filepaths = get_circuit_filepaths()
+    circuit_filepaths = sort_circ_files_by_type_and_speed(circuit_filepaths)
     # circuit_filepaths = [
     #     "circuits/ghz_5qubits.qasm",  # GHZ generation circuit
     #     "circuits/grover_5qubits.qasm",  # Grover algorithm
@@ -52,6 +60,12 @@ if __name__ == "__main__":
             f"memory_depolar_rate={memory_depolar_rate},"
             ")"
         )
+
+        # Handling very slow Grover circuits
+        if find_circuit_name(circuit) == "grover" and find_num_qubits(circuit) > 4:
+            num_iterations = 1
+        if find_circuit_name(circuit) == "grover" and find_num_qubits(circuit) > 8:
+            break # 9 qubits takes a very long time. I have cut off at around 7 hours.
 
         # Running program_str `num_iterations` times and saving average
         total_time = timeit(program_str, number=num_iterations, globals=globals())

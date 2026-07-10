@@ -175,12 +175,17 @@ def find_num_qubits(
     # Regular expression to match a number only if it is followed by the word qubits
     regex = re.compile(r'(\d+)(?=qubits\.qasm)')
 
+    # Search filename for the number of qubits using the regular expression
     num_qubits = int(regex.search(filename).group(0))
     return num_qubits
     
 def find_circuit_name(
     filename: str, # should be for circuit file. Can be name or path
 ):
+    # Regular expression to match a group of lower case letters 
+    # only if they are followed by _<an integer>qubits.qasm
     regex = re.compile(r'[a-z]+(?=_(\d+)qubits\.qasm)')
+
+    # Search filename for the circuit name using the regular expression
     circuit_name = regex.search(filename).group(0)
     return circuit_name

@@ -1,6 +1,6 @@
 from pathlib import Path
 
-import pandas
+import pandas as pd
 from dqc_simulator.qlib.remote_gate_scheme_info import get_scheme_info
 from dqc_simulator.software.compiler_preprocessing import (
     preprocess_qasm_to_compilable_monolithic as preprocess,
@@ -9,49 +9,59 @@ from dqc_simulator.software.partitioner import (
     first_come_first_served_qubits_to_qpus as allocate,
     partition_gate_tuples as partition,
 )
-from setup import get_circuit_filepaths, sort_circ_files_by_type_and_speed, setup_hardware
+from setup import (
+    get_circuit_filepaths,
+    sort_circ_files_by_type_and_speed,
+    setup_hardware, 
+    save
+    )
 
-home_dir = str(Path.home())
 
 class CircuitInfo():
     """The info associated with the circuits to be benchmarked."""
     def __init__(self, dqc):
-        self.info = {
+        self.scheme = "cat"
+        self.scheme_info = get_scheme_info()[self.scheme]
+        self.dqc = dqc
+        info = []
+        info = self.populate_info(info)
+        self.dataframe = pd.DataFrame(info)
+
+
+    def parse_gate_tuple(self, gate: tuple, circuit_info:dict):
+        if not isinstance(gate[0], tuple) and gate[0].name == "initialisation_op":
+                    pass
+        elif len(gate) == 3: # if single-qubit gate
+            circuit_info["num_single_qubit_gates"]+=1
+        elif gate[0].name == "cnot_gate":
+            if gate[-1] == self.scheme:
+                for resource in circuit_info:
+                    circuit_info[resource]+=self.scheme_info[resource]
+            else: # if CNOT is local
+                circuit_info["num_cnots"]+=1
+        return circuit_info
+
+    def populate_info(self, info):
+
+        # Choosing circuits to use (assuming the files are in the current working
+        # directory)
+        circuit_filepaths = get_circuit_filepaths()
+        circuit_filepaths = sort_circ_files_by_type_and_speed(circuit_filepaths)
+        # circuit_filepaths = [
+        #  "circuits/ghz_5qubits.qasm",  # GHZ generation circuit
+        #  "circuits/grover_5qubits.qasm",  # Grover algorithm
+        #  "circuits/qft_5qubits.qasm",  # QFT
+        # ]
+     
+        default_circuit_info = {
         "num_epr_pairs": 0,
         "num_cnots": 0,
         "num_single_qubit_gates": 0,
         "num_measurements": 0,
         # "num_classical_comms": 0,
         }
-        self.scheme = "cat"
-        self.scheme_info = get_scheme_info()[self.scheme]
-        self.dqc = dqc
-        self.populate_circuit_info()
 
-    def parse_gate_tuple(self, gate: tuple):
-        if not isinstance(gate[0], tuple) and gate[0].name == "initialisation_op":
-                    pass
-        elif len(gate) == 3: # if single-qubit gate
-            self.info["num_single_qubit_gates"]+=1
-        elif gate[0].name == "cnot_gate":
-            if gate[-1] == self.scheme:
-                for resource in self.info:
-                    self.info[resource]+=self.scheme_info[resource]
-            else: # if CNOT is local
-                self.info["num_cnots"]+=1
-
-    def populate_circuit_info(self):
-
-        # Choosing circuits to use (assuming the files are in the current working
-        # directory)
-        # circuit_filepaths = get_circuit_filepaths()
-        # circuit_filepaths = sort_circ_files_by_type_and_speed(circuit_filepaths)
-        circuit_filepaths = [
-         "circuits/ghz_5qubits.qasm",  # GHZ generation circuit
-         "circuits/grover_5qubits.qasm",  # Grover algorithm
-         "circuits/qft_5qubits.qasm",  # QFT
-        ]
-     
+        circuit_info = dict(default_circuit_info)
         for circuit in circuit_filepaths:
             monolithic_circuit = preprocess(circuit, include_path="./circuits/")
             monolithic_circuit = monolithic_circuit.ops  # gate_tuples
@@ -71,13 +81,13 @@ class CircuitInfo():
             ) 
 
             for gate in partitioned_gate_tuples:
-                self.parse_gate_tuple(gate)
+                circuit_info = self.parse_gate_tuple(gate, circuit_info)
 
-            # TO DO: right now circuit info is amalgamating all circuits. I want to create a new entry for each circuit
-
-
-
-        
+            circuit_info["circuit"] = circuit
+            info.append(circuit_info)
+            # Reset circuit_info to default for next iteration
+            circuit_info = dict(default_circuit_info)
+        return info
 
 
 
@@ -91,4 +101,12 @@ if __name__ == "__main__":
         memory_depolar_rate=0,
     )
     circuit_info = CircuitInfo(dqc)
-    print(circuit_info.info)
+    df = circuit_info.dataframe
+    
+    # Saving (will overwrite any file with the same name and path)
+    home_dir = str(Path.home())
+    filepath = home_dir + "/research_data/data/dqc_simulator_benchmarks/benchmark_circuit_info.csv"
+    df.to_csv(filepath)
+    
+
+    

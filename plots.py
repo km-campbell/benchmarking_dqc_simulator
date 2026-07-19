@@ -53,9 +53,10 @@ def plot_memory_benchmarks_DM_wrt_num_qubits(show=True, save=False):
     if show:
         plt.show()
 
+
 def plot_memory_benchmarks_DM_wrt_num_gates():
     pass
-
+    # TO DO: implement this, summing the num_cnots with the num_single_qubit_gates
 
 
 def plot_time_benchmarks_DM_wrt_num_qubits(show=True, save=False):
@@ -81,6 +82,10 @@ def plot_time_benchmarks_DM_wrt_num_qubits(show=True, save=False):
     
     if show:
         plt.show()
+
+def plot_time_benchmarks_DM_wrt_gates():
+    pass
+    # TO DO: implement this, summing the num_cnots with the num_single_qubit_gates
 
 if __name__ == "__main__":
     plot_memory_benchmarks_DM_wrt_num_qubits(show=False, save=True)

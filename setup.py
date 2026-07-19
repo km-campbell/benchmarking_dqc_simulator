@@ -214,7 +214,6 @@ def get_circuit_filepaths():
 def sort_circ_files_by_type_and_speed(circuit_filepaths) -> [str]:
     """Ad hoc sorting by execution speed (based on my experience of how long they take to run)"""
     sorted_files = sort_files_by_circ_type(circuit_filepaths)
-    print(sorted_files)
     sorted_files = list(sorted_files.values())
     return list(it.chain.from_iterable(sorted_files))
 

@@ -1,6 +1,5 @@
 """Memory benchmarks"""
 
-import os
 from pathlib import Path
 
 from memory_profiler import memory_usage

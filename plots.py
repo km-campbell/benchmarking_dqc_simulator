@@ -28,7 +28,7 @@ def get_qubits_and_ydata(data, ydata_category: str):
     return xydata
 
 
-def plot_memory_benchmarks_DM(show=True, save=False):
+def plot_memory_benchmarks_DM_wrt_num_qubits(show=True, save=False):
     filepath = data_filepath_mem
     data = pd.read_csv(filepath)
     xydata = get_qubits_and_ydata(data, "max_memory_usage (MiB)")
@@ -37,12 +37,13 @@ def plot_memory_benchmarks_DM(show=True, save=False):
     for circuit, vals in xydata.items():
         num_qubits = vals[0]
         max_mem = vals[1]
-        ax.plot(num_qubits, max_mem, label=circuit, linestyle='none', marker='x')
+        ax.plot(num_qubits, max_mem, label=circuit, marker='x')
         # Should I plot logarithmically?
 
+    # ax.set_yscale("log")
     ax.set_xlabel("# qubits")
     ax.set_ylabel("Max memory usage (MiB)")
-    fig.legend()
+    fig.legend(loc="upper left", bbox_to_anchor=(0.2, 0.8))
 
     if save:
         savepath = plot_dir + "num_qubits_vs_mem.pdf"
@@ -52,9 +53,12 @@ def plot_memory_benchmarks_DM(show=True, save=False):
     if show:
         plt.show()
 
+def plot_memory_benchmarks_DM_wrt_num_gates():
+    pass
 
 
-def plot_time_benchmarks_DM(show=True, save=False):
+
+def plot_time_benchmarks_DM_wrt_num_qubits(show=True, save=False):
     filepath = data_filepath_time
     data = pd.read_csv(filepath)
     xydata = get_qubits_and_ydata(data, "average_time (s)")
@@ -63,10 +67,12 @@ def plot_time_benchmarks_DM(show=True, save=False):
     for circuit, vals in xydata.items():
         num_qubits = vals[0]
         avg_time = vals[1]
-        ax.plot(num_qubits, avg_time, label=circuit, linestyle='none', marker='x')
+        ax.plot(num_qubits, avg_time, label=circuit, marker='x')
 
+    ax.set_yscale("log")
     ax.set_xlabel("# qubits")
     ax.set_ylabel("Runtime (s)")
+    fig.legend(loc="upper left", bbox_to_anchor=(0.2, 0.8))
 
     if save:
         savepath = plot_dir + "num_qubits_vs_runtime.pdf"
@@ -77,6 +83,6 @@ def plot_time_benchmarks_DM(show=True, save=False):
         plt.show()
 
 if __name__ == "__main__":
-    plot_memory_benchmarks_DM(show=False, save=False)
+    plot_memory_benchmarks_DM_wrt_num_qubits(show=False, save=True)
 
-    plot_time_benchmarks_DM(show=False, save=False)
+    plot_time_benchmarks_DM_wrt_num_qubits(show=False, save=True)

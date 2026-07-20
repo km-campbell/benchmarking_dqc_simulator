@@ -105,7 +105,8 @@ if __name__ == "__main__":
     
     # Saving (will overwrite any file with the same name and path)
     home_dir = str(Path.home())
-    filepath = home_dir + "/research_data/data/dqc_simulator_benchmarks/benchmark_circuit_info.csv"
+    filepath = (home_dir + 
+                "/research_data/data/dqc_simulator_benchmarks/benchmark_circuit_info.csv")
     df.to_csv(filepath)
     
 

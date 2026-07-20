@@ -27,6 +27,32 @@ def get_qubits_and_ydata(data, ydata_category: str):
         xydata[circuit_type][1].append(ydata)
     return xydata
 
+def get_circuit_info():
+    filepath = (home_dir + 
+                "/research_data/data/dqc_simulator_benchmarks/benchmark_circuit_info.csv")
+    return pd.read_csv(filepath)
+
+def get_num_gates_and_ydata(data, ydata_category: str):
+    circuit_info = get_circuit_info()
+
+    circuit_files = list(data["circuit_file"])
+    xydata = {"ghz": ([], []), "grover": ([], []), "qft": ([], [])}
+    for file in circuit_files:
+        circuit_type = find_circuit_name(file)
+
+        file_info = circuit_info[circuit_info["circuit"] == file]
+        num_gates = file_info["num_cnots"] + file_info["num_single_qubit_gates"]
+        xydata[circuit_type][0].append(num_gates)
+
+        # Add max memory usage
+        idx = data.index[data["circuit_file"] == file]
+        ydata = data.iloc[idx][ydata_category].item()
+        xydata[circuit_type][1].append(ydata)
+    return xydata
+
+
+
+
 
 def plot_memory_benchmarks_DM_wrt_num_qubits(show=True, save=False):
     filepath = data_filepath_mem
@@ -38,9 +64,7 @@ def plot_memory_benchmarks_DM_wrt_num_qubits(show=True, save=False):
         num_qubits = vals[0]
         max_mem = vals[1]
         ax.plot(num_qubits, max_mem, label=circuit, marker='x')
-        # Should I plot logarithmically?
 
-    # ax.set_yscale("log")
     ax.set_xlabel("# qubits")
     ax.set_ylabel("Max memory usage (MiB)")
     fig.legend(loc="upper left", bbox_to_anchor=(0.2, 0.8))
@@ -54,9 +78,30 @@ def plot_memory_benchmarks_DM_wrt_num_qubits(show=True, save=False):
         plt.show()
 
 
-def plot_memory_benchmarks_DM_wrt_num_gates():
-    pass
-    # TO DO: implement this, summing the num_cnots with the num_single_qubit_gates
+def plot_memory_benchmarks_DM_wrt_num_gates(show=True, save=False):
+    data = pd.read_csv(data_filepath_mem)
+    xydata = get_num_gates_and_ydata(data, "max_memory_usage (MiB)")
+
+    fig, ax = plt.subplots()
+    for circuit, vals in xydata.items():
+        num_gates = vals[0]
+        max_mem = vals[1]
+        ax.plot(num_gates, max_mem, label=circuit, marker="x")
+
+    ax.set_xscale("log")
+    # ax.set_yscale("log")
+    ax.set_xlabel("# gates")
+    ax.set_ylabel("Max memory usage (MiB)")
+    fig.legend(loc="upper left", bbox_to_anchor=(0.2, 0.8))
+
+    if save:
+        savepath = plot_dir + "num_gates_vs_mem.pdf"
+        print("Saving plot to ", savepath)
+        fig.savefig(savepath)
+
+    if show:
+        plt.show()
+
 
 
 def plot_time_benchmarks_DM_wrt_num_qubits(show=True, save=False):
@@ -83,11 +128,35 @@ def plot_time_benchmarks_DM_wrt_num_qubits(show=True, save=False):
     if show:
         plt.show()
 
-def plot_time_benchmarks_DM_wrt_gates():
-    pass
-    # TO DO: implement this, summing the num_cnots with the num_single_qubit_gates
+def plot_time_benchmarks_DM_wrt_num_gates(show=True, save=False):
+    data = pd.read_csv(data_filepath_time)
+    xydata = get_num_gates_and_ydata(data, "average_time (s)")
+
+    fig, ax = plt.subplots()
+    for circuit, vals in xydata.items():
+        num_gates = vals[0]
+        max_mem = vals[1]
+        ax.plot(num_gates, max_mem, label=circuit, marker="x")
+
+    ax.set_xscale("log")
+    ax.set_yscale("log")
+    ax.set_xlabel("# gates")
+    ax.set_ylabel("Runtime (s)")
+    fig.legend(loc="upper left", bbox_to_anchor=(0.2, 0.8))
+
+    if save:
+        savepath = plot_dir + "num_gates_vs_runtime.pdf"
+        print("Saving plot to ", savepath)
+        fig.savefig(savepath)
+
+    if show:
+        plt.show()
 
 if __name__ == "__main__":
-    plot_memory_benchmarks_DM_wrt_num_qubits(show=False, save=True)
+    # plot_memory_benchmarks_DM_wrt_num_qubits(show=False, save=False)
 
-    plot_time_benchmarks_DM_wrt_num_qubits(show=False, save=True)
+    # plot_time_benchmarks_DM_wrt_num_qubits(show=False, save=False)
+
+    plot_memory_benchmarks_DM_wrt_num_gates(show=True, save=False)
+
+    # plot_time_benchmarks_DM_wrt_num_gates(show=True, save=False)

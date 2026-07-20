@@ -110,8 +110,8 @@ def take_experimental_shot(
     meas_error_prob=0,
     memory_depolar_rate=0,
 ):
-    # Setting the formalism used to the density matrix formalism
-    ns.set_qstate_formalism(QFormalism.DM)
+    # Setting the formalism used
+    ns.set_qstate_formalism(QFormalism.STAB)
 
     # Restting the state of the simulation (this is good practice)
     ns.sim_reset()
@@ -155,8 +155,11 @@ def get_fidelity(
         meas_error_prob=meas_error_prob,
         memory_depolar_rate=memory_depolar_rate,
     )
-    desired_state = qapi.reduced_dm(ideal_qubits)
-    fidelity = qapi.fidelity(actual_qubits, desired_state, squared=True)
+    # Comment out the following when using DM or KET
+    fidelity = float("nan") # not caring about result only about benchmark
+    # Comment out the following when not using DM or KET formalisms
+    # desired_state = qapi.reduced_dm(ideal_qubits)
+    # fidelity = qapi.fidelity(actual_qubits, desired_state, squared=True)
     return fidelity
 
 

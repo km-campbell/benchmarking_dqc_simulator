@@ -30,7 +30,7 @@ if __name__ == "__main__":
     single_qubit_gate_error_prob=2e-05
     meas_error_prob=3e-03
     memory_depolar_rate=0.055
-    num_iterations = 5
+    num_iterations = 50
     # Choosing circuits to use (assuming the files are in the current working
     # directory)
     circuit_filepaths = get_circuit_filepaths()
@@ -62,6 +62,9 @@ if __name__ == "__main__":
         )
 
         # Handling very slow Grover circuits
+        if find_circuit_name(circuit) == "grover": # temporarily skipping Grover as I have enough results for it
+            continue # DELETE THIS if statement once results have been taken
+
         if find_circuit_name(circuit) == "grover" and find_num_qubits(circuit) > 4:
             num_iterations = 1
         if find_circuit_name(circuit) == "grover" and find_num_qubits(circuit) > 8:
@@ -70,7 +73,7 @@ if __name__ == "__main__":
         # Running program_str `num_iterations` times and saving average
         total_time = timeit(program_str, number=num_iterations, globals=globals())
         average_time = total_time/num_iterations
-        results["circuit_filename"].append(circuit)
+        results["circuit_file"].append(circuit)
         results["total_time (s)"].append(total_time)
         results["num_iterations"].append(num_iterations)
         results["average_time (s)"].append(average_time)

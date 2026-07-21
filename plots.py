@@ -10,8 +10,16 @@ from time_benchmarks import data_filepath as data_filepath_time
 home_dir = str(Path.home())
 plot_dir = home_dir + "/research_plots/dqc_simulator_paper/benchmarks/"
 
+def filter_by_num_iterations(data: pd.DataFrame, num_iterations: int):
+    mask = (data["num_iterations"] == num_iterations) | (data["circuit_file"].str.contains("grover"))
+    return data[mask].reset_index()
+
 def get_qubits_and_ydata(data, ydata_category: str):
     # ydata_category should match column name in dataframe
+
+    # filter data to get only the data for the larger number of iterations I took
+    if ydata_category == "average_time (s)":
+        data = filter_by_num_iterations(data, num_iterations=50)
 
     circuit_files = list(data["circuit_file"])
     xydata = {"ghz": ([], []), "grover": ([], []), "qft": ([], [])}
@@ -33,6 +41,10 @@ def get_circuit_info():
     return pd.read_csv(filepath)
 
 def get_num_gates_and_ydata(data, ydata_category: str):
+    # filter data to get only the data for the larger number of iterations I took
+    if ydata_category == "average_time (s)":
+        data = filter_by_num_iterations(data, num_iterations=50)
+
     circuit_info = get_circuit_info()
 
     circuit_files = list(data["circuit_file"])
@@ -196,10 +208,10 @@ def plot_time_benchmarks_DM_wrt_num_gates(show=True, save=False):
         plt.show()
 
 if __name__ == "__main__":
-    plot_memory_benchmarks_wrt_num_qubits(show=False, save=True)
+    # plot_memory_benchmarks_wrt_num_qubits(show=False, save=True)
 
     plot_time_benchmarks_DM_wrt_num_qubits(show=False, save=True)
 
-    plot_memory_benchmarks_DM_wrt_num_gates(show=False, save=True)
+    # plot_memory_benchmarks_DM_wrt_num_gates(show=False, save=True)
 
     plot_time_benchmarks_DM_wrt_num_gates(show=False, save=True)

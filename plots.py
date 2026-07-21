@@ -54,16 +54,28 @@ def get_num_gates_and_ydata(data, ydata_category: str):
 
 
 
-def plot_memory_benchmarks_DM_wrt_num_qubits(show=True, save=False):
+def plot_memory_benchmarks_wrt_num_qubits(show=True, save=False):
     filepath = data_filepath_mem
-    data = pd.read_csv(filepath)
-    xydata = get_qubits_and_ydata(data, "max_memory_usage (MiB)")
+    ydata_category = "max_memory_usage (MiB)"
+    data_DM = pd.read_csv(filepath)
+    xydata_DM = get_qubits_and_ydata(data_DM, ydata_category)
+    data_STAB = pd.read_csv(filepath.replace("DM", "STAB"))
+    xydata_STAB = get_qubits_and_ydata(data_STAB, ydata_category)
 
     fig, ax = plt.subplots()
-    for circuit, vals in xydata.items():
+
+    # For DM
+    for circuit, vals in xydata_DM.items():
         num_qubits = vals[0]
         max_mem = vals[1]
         ax.plot(num_qubits, max_mem, label=circuit, marker='x')
+
+    # For stabilisers
+    vals = xydata_STAB["ghz"]
+    num_qubits = vals[0]
+    max_mem = vals[1]
+    ax.plot(num_qubits, max_mem, label="ghz (STAB)", marker='x', 
+            linestyle="dashed")
 
     ax.set_xlabel("# qubits")
     ax.set_ylabel("Max memory usage (MiB)")
@@ -79,14 +91,25 @@ def plot_memory_benchmarks_DM_wrt_num_qubits(show=True, save=False):
 
 
 def plot_memory_benchmarks_DM_wrt_num_gates(show=True, save=False):
-    data = pd.read_csv(data_filepath_mem)
-    xydata = get_num_gates_and_ydata(data, "max_memory_usage (MiB)")
+    data_DM = pd.read_csv(data_filepath_mem)
+    ydata_category = "max_memory_usage (MiB)"
+    xydata_DM = get_num_gates_and_ydata(data_DM, ydata_category)
+    data_STAB = pd.read_csv(data_filepath_mem.replace("DM", "STAB"))
+    xydata_STAB = get_num_gates_and_ydata(data_STAB, ydata_category)
 
     fig, ax = plt.subplots()
-    for circuit, vals in xydata.items():
+    # For DM
+    for circuit, vals in xydata_DM.items():
         num_gates = vals[0]
         max_mem = vals[1]
         ax.plot(num_gates, max_mem, label=circuit, marker="x")
+    
+    # For stabilisers
+    vals = xydata_STAB["ghz"]
+    num_qubits = vals[0]
+    max_mem = vals[1]
+    ax.plot(num_qubits, max_mem, label="ghz (STAB)", marker='x', 
+            linestyle="dashed")
 
     ax.set_xscale("log")
     # ax.set_yscale("log")
@@ -106,14 +129,25 @@ def plot_memory_benchmarks_DM_wrt_num_gates(show=True, save=False):
 
 def plot_time_benchmarks_DM_wrt_num_qubits(show=True, save=False):
     filepath = data_filepath_time
-    data = pd.read_csv(filepath)
-    xydata = get_qubits_and_ydata(data, "average_time (s)")
+    ydata_category = "average_time (s)"
+    data_DM = pd.read_csv(filepath)
+    xydata_DM = get_qubits_and_ydata(data_DM, ydata_category)
+    data_STAB = pd.read_csv(filepath.replace("DM", "STAB"))
+    xydata_STAB = get_qubits_and_ydata(data_STAB, ydata_category)
 
     fig, ax = plt.subplots()
-    for circuit, vals in xydata.items():
+    # For DMs
+    for circuit, vals in xydata_DM.items():
         num_qubits = vals[0]
         avg_time = vals[1]
         ax.plot(num_qubits, avg_time, label=circuit, marker='x')
+
+    # For stabilisers
+    vals = xydata_STAB["ghz"]
+    num_qubits = vals[0]
+    max_runtime = vals[1]
+    ax.plot(num_qubits, max_runtime, label="ghz (STAB)", marker='x', 
+            linestyle="dashed")
 
     ax.set_yscale("log")
     ax.set_xlabel("# qubits")
@@ -129,14 +163,23 @@ def plot_time_benchmarks_DM_wrt_num_qubits(show=True, save=False):
         plt.show()
 
 def plot_time_benchmarks_DM_wrt_num_gates(show=True, save=False):
-    data = pd.read_csv(data_filepath_time)
-    xydata = get_num_gates_and_ydata(data, "average_time (s)")
+    data_DM = pd.read_csv(data_filepath_time)
+    xydata_DM = get_num_gates_and_ydata(data_DM, "average_time (s)")
+    data_STAB = pd.read_csv(data_filepath_time.replace("DM", "STAB"))
+    xydata_STAB = get_num_gates_and_ydata(data_STAB, "average_time (s)")
 
     fig, ax = plt.subplots()
-    for circuit, vals in xydata.items():
+    for circuit, vals in xydata_DM.items():
         num_gates = vals[0]
         max_mem = vals[1]
         ax.plot(num_gates, max_mem, label=circuit, marker="x")
+
+    # For stabilisers
+    vals = xydata_STAB["ghz"]
+    num_qubits = vals[0]
+    max_runtime = vals[1]
+    ax.plot(num_qubits, max_runtime, label="ghz (STAB)", marker='x', 
+            linestyle="dashed")
 
     ax.set_xscale("log")
     ax.set_yscale("log")
@@ -153,10 +196,10 @@ def plot_time_benchmarks_DM_wrt_num_gates(show=True, save=False):
         plt.show()
 
 if __name__ == "__main__":
-    # plot_memory_benchmarks_DM_wrt_num_qubits(show=False, save=False)
+    plot_memory_benchmarks_wrt_num_qubits(show=False, save=True)
 
-    # plot_time_benchmarks_DM_wrt_num_qubits(show=False, save=False)
+    plot_time_benchmarks_DM_wrt_num_qubits(show=False, save=True)
 
-    plot_memory_benchmarks_DM_wrt_num_gates(show=True, save=False)
+    plot_memory_benchmarks_DM_wrt_num_gates(show=False, save=True)
 
-    # plot_time_benchmarks_DM_wrt_num_gates(show=True, save=False)
+    plot_time_benchmarks_DM_wrt_num_gates(show=False, save=True)

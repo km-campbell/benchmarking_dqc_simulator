@@ -34,7 +34,7 @@ if __name__ == "__main__":
     single_qubit_gate_error_prob=2e-05
     meas_error_prob=3e-03
     memory_depolar_rate=0.055
-    num_iterations = 5
+    num_iterations = 50
     # Choosing circuits to use (assuming the files are in the current working
     # directory)
     circuit_filepaths = get_circuit_filepaths()
@@ -67,12 +67,6 @@ if __name__ == "__main__":
             f"memory_depolar_rate={memory_depolar_rate},"
             ")"
         )
-
-        # Handling very slow Grover circuits
-        if find_circuit_name(circuit) == "grover" and find_num_qubits(circuit) > 4:
-            num_iterations = 1
-        if find_circuit_name(circuit) == "grover" and find_num_qubits(circuit) > 8:
-            break # 9 qubits takes a very long time. I have cut off at around 7 hours.
 
         # Running program_str `num_iterations` times and saving average
         total_time = timeit(program_str, number=num_iterations, globals=globals())
